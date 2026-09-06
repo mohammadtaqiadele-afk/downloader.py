@@ -108,7 +108,22 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             os.remove(filename)
 
     except Exception as e:
-        await context.bot.send_message(chat_id=query.message.chat_id, text=f"متأسفانه خطایی رخ داد:\n{str(e)}")
+        # چک کنیم ببینیم آیا متغیر محیطی اصلاً وجود داره یا نه
+          env_check = (
+              "متغیر محیطی هست"
+              if os.environ.get("YOUTUBE_COOKIES")
+              else "متغیر محیطی خالیه!"
+          )
+          file_check = (
+              "فایل cookies.txt هست"
+              if os.path.exists("cookies.txt")
+              else "فایل cookies.txt ساخته نشده!"
+          )
+
+          error_msg = f"خطا: {str(e)}\n\nوضعیت:\n- {env_check}\n- {file_check}"
+          await context.bot.send_message(
+              chat_id=query.message.chat_id, text=error_msg
+          )
 
 def main():
     token = os.environ.get("TELEGRAM_TOKEN")
