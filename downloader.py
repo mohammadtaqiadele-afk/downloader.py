@@ -100,8 +100,6 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 'noplaylist': True,
                 'quiet': True,
             }
-            if os.path.exists('cookies.txt'):
-                ydl_opts['cookiefile'] = 'cookies.txt'
 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(url, download=True)
