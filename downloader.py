@@ -14,13 +14,6 @@ logging.basicConfig(
 
 subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "yt-dlp"])
 
-def setup_cookies():
-    """تابع کمکی برای ساختن فایل کوکی از روی متغیر محیطی رندر"""
-    cookies_content = os.environ.get("YOUTUBE_COOKIES")
-    if cookies_content:
-        with open("cookies.txt", "w", encoding="utf-8") as f:
-            f.write(cookies_content)
-
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "سلام! من بات حرفه‌ای دانلودر تو هستم 🚀\n"
@@ -62,8 +55,9 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.edit_message_text(text="⏳ در حال دانلود و آماده‌سازی... لطفاً صبور باش.")
 
     try:
-        # ساخت فایل کوکی از متغیر محیطی قبل از هر دانلودی
-        setup_cookies()
+        # پاکسازی فایل کوکی اگر احیاناً جایی مونده باشه
+        if os.path.exists('cookies.txt'):
+            os.remove('cookies.txt')
 
         if choice == 'dl_video':
             ydl_opts = {
@@ -77,8 +71,6 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     }
                 },
             }
-            if os.path.exists('cookies.txt'):
-                ydl_opts['cookiefile'] = 'cookies.txt'
 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(url, download=True)
@@ -113,12 +105,11 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         if os.path.exists('cookies.txt'):
             os.remove('cookies.txt')
-        # چک کنیم ببینیم آیا متغیر محیطی اصلاً وجود داره یا نه
-
-        error_msg = f"خطا: {str(e)}\n\nوضعیت:\n- {env_check}\n- {file_check}"
-          await context.bot.send_message(
-              chat_id=query.message.chat_id, text=error_msg
-          )
+        
+        error_msg = f"خطا در دانلود:\n{str(e)}"
+        await context.bot.send_message(
+            chat_id=query.message.chat_id, text=error_msg
+        )
 
 def main():
     token = os.environ.get("TELEGRAM_TOKEN")
