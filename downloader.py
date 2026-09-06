@@ -90,12 +90,21 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 def main():
     application = ApplicationBuilder().token(TOKEN).build()
 
+
+
     application.add_handler(CommandHandler("start", start))
+
     application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_message))
+
     application.add_handler(CallbackQueryHandler(button_callback))
 
+
+
     print("Professional Bot is running...")
-    application.run_polling()
+
+# استفاده از این روش برای سازگاری کامل با سرورهای ابری
+
+    application.run_polling(allowed_updates=Update.ALL_TYPES)
 
 if __name__ == '__main__':
     main()
