@@ -14,6 +14,13 @@ logging.basicConfig(
 
 subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "yt-dlp"])
 
+def setup_cookies():
+    """تابع کمکی برای ساختن فایل کوکی از روی متغیر محیطی رندر"""
+    cookies_content = os.environ.get("YOUTUBE_COOKIES")
+    if cookies_content:
+        with open("cookies.txt", "w", encoding="utf-8") as f:
+            f.write(cookies_content)
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "سلام! من بات حرفه‌ای دانلودر تو هستم 🚀\n"
@@ -55,6 +62,9 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.edit_message_text(text="⏳ در حال دانلود و آماده‌سازی... لطفاً صبور باش.")
 
     try:
+        # ساخت فایل کوکی از متغیر محیطی قبل از هر دانلودی
+        setup_cookies()
+
         if choice == 'dl_video':
             ydl_opts = {
                 'format': 'best',
@@ -64,6 +74,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             }
             if os.path.exists('cookies.txt'):
                 ydl_opts['cookiefile'] = 'cookies.txt'
+
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(url, download=True)
                 filename = ydl.prepare_filename(info)
@@ -83,12 +94,10 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 }],
                 'noplaylist': True,
                 'quiet': True,
-                'extractor_args': {
-                    'youtube': {
-                        'player_client': ['tv_embedded', 'mweb']
-                    }
-                },
             }
+            if os.path.exists('cookies.txt'):
+                ydl_opts['cookiefile'] = 'cookies.txt'
+
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(url, download=True)
                 filename = ydl.prepare_filename(info)
@@ -115,11 +124,9 @@ def main():
 
     print("Professional Bot is running...")
     
-    # مدیریت ایمن Event Loop برای سازگاری کامل با پایتون جدید
     try:
         loop = asyncio.get_event_loop()
         if loop.is_running():
-            # اگر لوپ در حال اجراست
             pass
     except RuntimeError:
         loop = asyncio.new_event_loop()
@@ -129,4 +136,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
