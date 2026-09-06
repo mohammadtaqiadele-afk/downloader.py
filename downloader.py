@@ -111,14 +111,11 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             os.remove(filename)
 
     except Exception as e:
+        if os.path.exists('cookies.txt'):
+            os.remove('cookies.txt')
         # چک کنیم ببینیم آیا متغیر محیطی اصلاً وجود داره یا نه
-          env_check = (
-              "متغیر محیطی هست"
-              if os.environ.get("YOUTUBE_COOKIES")
-              else "متغیر محیطی خالیه!"
-          )
 
-          error_msg = f"خطا: {str(e)}\n\nوضعیت:\n- {env_check}\n- {file_check}"
+        error_msg = f"خطا: {str(e)}\n\nوضعیت:\n- {env_check}\n- {file_check}"
           await context.bot.send_message(
               chat_id=query.message.chat_id, text=error_msg
           )
