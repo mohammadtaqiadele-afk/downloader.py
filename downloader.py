@@ -87,31 +87,31 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         await context.bot.send_message(chat_id=query.message.chat_id, text=f"متأسفانه خطایی رخ داد:\n{str(e)}")
 
-    def main():
-        token = os.environ.get("TELEGRAM_TOKEN")
-        if not token:
-            print("Error: TELEGRAM_TOKEN environment variable is missing!")
-            return
+def main():
+    token = os.environ.get("TELEGRAM_TOKEN")
+    if not token:
+        print("Error: TELEGRAM_TOKEN environment variable is missing!")
+        return
 
-        application = ApplicationBuilder().token(token).build()
+    application = ApplicationBuilder().token(token).build()
 
-        application.add_handler(CommandHandler("start", start))
-        application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_message))
-        application.add_handler(CallbackQueryHandler(button_callback))
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_message))
+    application.add_handler(CallbackQueryHandler(button_callback))
 
-        print("Professional Bot is running...")
+    print("Professional Bot is running...")
     
     # مدیریت ایمن Event Loop برای سازگاری کامل با پایتون جدید
-        try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
+    try:
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
             # اگر لوپ در حال اجراست
-                pass
-        except RuntimeError:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
+            pass
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
 
-        application.run_polling(allowed_updates=Update.ALL_TYPES)
+    application.run_polling(allowed_updates=Update.ALL_TYPES)
 
 if __name__ == '__main__':
     main()
