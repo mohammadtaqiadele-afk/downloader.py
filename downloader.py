@@ -117,11 +117,6 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
               if os.environ.get("YOUTUBE_COOKIES")
               else "متغیر محیطی خالیه!"
           )
-          file_check = (
-              "فایل cookies.txt هست"
-              if os.path.exists("cookies.txt")
-              else "فایل cookies.txt ساخته نشده!"
-          )
 
           error_msg = f"خطا: {str(e)}\n\nوضعیت:\n- {env_check}\n- {file_check}"
           await context.bot.send_message(
