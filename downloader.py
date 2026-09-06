@@ -59,6 +59,8 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ydl_opts = {
                 'format': 'best',
                 'outtmpl': 'downloaded_media.%(ext)s',
+                'noplaylist': True,
+                'quiet': True,
             }
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(url, download=True)
